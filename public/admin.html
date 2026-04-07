@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="adminApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background: #0073e6;
+            color: white;
+        }
+    </style>
+</head>
+
+<body ng-controller="adminController">
+
+<h1>Registered Students</h1>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>ID</th>
+        <th>Branch</th>
+        <th>Tournament</th>
+    </tr>
+
+    <tr ng-repeat="s in students">
+        <td>{{s.name}}</td>
+        <td>{{s.id}}</td>
+        <td>{{s.branch}}</td>
+        <td>{{s.tournament}}</td>
+    </tr>
+</table>
+
+<script>
+var app = angular.module("adminApp", []);
+
+app.controller("adminController", function($scope, $http) {
+
+    $http.get("/students")
+        .then(function(res) {
+            $scope.students = res.data;
+        })
+        .catch(function() {
+            alert("Error loading data");
+        });
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="cricketApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Cricket Tournament Registration</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+    <style>
+        body { margin:0; font-family: Arial; background:#f4f4f4; scroll-behavior:smooth; }
+
+        .header { display:flex; align-items:center; padding:15px; background:white; }
+        .logo { width:80px; margin-right:20px; }
+
+        .slider { height:300px; position:relative; }
+        .slider img { width:100%; height:300px; position:absolute; opacity:0; }
+        .slider img.active { opacity:1; }
+
+        .cards { display:flex; justify-content:space-around; padding:30px; flex-wrap:wrap; }
+        .card { width:28%; min-width:250px; background:white; text-align:center; border-radius:10px; }
+        .card img { width:100%; height:180px; }
+
+        .card button {
+            margin:10px;
+            padding:10px;
+            background:#0073e6;
+            color:white;
+            border:none;
+            border-radius:5px;
+        }
+
+        .form-section {
+            width:60%;
+            margin:40px auto;
+            background:white;
+            padding:20px;
+            border-radius:10px;
+        }
+
+        input, select {
+            width:100%;
+            margin:10px 0;
+            padding:10px;
+        }
+
+        .submit-btn {
+            background:green;
+            color:white;
+            padding:10px;
+            border:none;
+            border-radius:5px;
+        }
+
+        .message { color:green; margin-top:10px; }
+    </style>
+</head>
+
+<body ng-controller="mainController">
+
+<div class="header">
+    <img src="images/gitam-logo.png" class="logo">
+    <h1>Cricket Tournament Registration</h1>
+</div>
+
+<div class="slider">
+    <img ng-repeat="img in images"
+         ng-src="{{img}}"
+         ng-class="{active: $index === currentIndex}">
+</div>
+
+<div class="cards">
+    <div class="card">
+        <img src="images/t20.jpeg">
+        <button ng-click="selectTournament('T20')">T20 Registration</button>
+    </div>
+
+    <div class="card">
+        <img src="images/odi.jpeg">
+        <button ng-click="selectTournament('ODI')">ODI Registration</button>
+    </div>
+
+    <div class="card">
+        <img src="images/testseries.jpeg">
+        <button ng-click="selectTournament('Test')">Test Registration</button>
+    </div>
+</div>
+
+<div class="form-section" id="form">
+    <h2>Registration Form</h2>
+
+    <input type="text" ng-model="student.name" placeholder="Name">
+    <input type="text" ng-model="student.id" placeholder="ID">
+    <input type="text" ng-model="student.branch" placeholder="Branch">
+
+    <select ng-model="student.tournament">
+        <option value="">Select Tournament</option>
+        <option value="T20">T20</option>
+        <option value="ODI">ODI</option>
+        <option value="Test">Test</option>
+    </select>
+
+    <button class="submit-btn" ng-click="submitForm()">Submit</button>
+
+    <p class="message">{{message}}</p>
+</div>
+
+<script>
+var app = angular.module("cricketApp", []);
+
+app.controller("mainController", function($scope, $interval, $http) {
+
+    $scope.images = [
+        "images/ground1.avif",
+        "images/ground4.jpeg",
+        "images/ground3.webp"
+    ];
+
+    $scope.currentIndex = 0;
+    $scope.student = {};
+    $scope.message = "";
+
+    $interval(function () {
+        $scope.currentIndex = ($scope.currentIndex + 1) % $scope.images.length;
+    }, 3000);
+
+    $scope.selectTournament = function(type) {
+        $scope.student.tournament = type;
+
+        document.getElementById("form").scrollIntoView({
+            behavior: "smooth"
+        });
+    };
+
+    $scope.submitForm = function() {
+        $http.post("/register", $scope.student)
+        .then(function(res) {
+            $scope.message = res.data.message;
+            $scope.student = {};
+        })
+        .catch(function() {
+            $scope.message = "Server error!";
+        });
+    };
+
+});
+</script>
+
+</body>
+</html>
